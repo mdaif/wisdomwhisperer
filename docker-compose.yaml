@@ -1,0 +1,11 @@
+services:
+
+  db:
+    image: postgres:16
+    restart: on-failure
+    ports:
+      - 10000:5432
+    environment:
+      POSTGRES_USER: wisdomwhisperer_devuser
+      POSTGRES_PASSWORD: wisdomwhisperer_pass
+      POSTGRES_DB: wisdomwhisperer_db
