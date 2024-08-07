@@ -1,9 +1,12 @@
 package daif.me.plugins
 
+import daif.me.model.Profile
+import daif.me.model.ProfileRepository
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.http.content.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
@@ -13,7 +16,7 @@ import okhttp3.Request
 import org.json.JSONObject
 
 
-fun Application.configureRouting() {
+fun Application.configureRouting(profileRepository: ProfileRepository) {
     routing {
 
         staticResources("static", "static")
@@ -46,8 +49,28 @@ fun Application.configureRouting() {
         }
 
         authenticate("auth-jwt") {
-            get("/profile") {
-                call.respond("this is protected")
+            route("/profile") {
+                post("") {
+                    val profile = call.receive<Profile>()
+                    profileRepository.addProfile(profile)
+                    call.respond(HttpStatusCode.Created)
+                }
+                put("/byEmail/{email}") {
+
+                }
+                get("/byEmail/{email}") {
+                    val email = call.parameters["email"]
+                    if (email == null) {
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@get
+                    }
+                    val profile = profileRepository.profileByEmail(email)
+                    if (profile == null) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@get
+                    }
+                    call.respond(profile)
+                }
             }
 
         }
