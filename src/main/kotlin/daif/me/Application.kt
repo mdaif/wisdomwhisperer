@@ -1,5 +1,7 @@
 package daif.me
 
+import daif.me.model.PostgresProfileRepository
+import daif.me.plugins.configureDatabases
 import daif.me.plugins.configureRouting
 import daif.me.plugins.configureSecurity
 import daif.me.plugins.configureSerialization
@@ -10,7 +12,10 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    val profileRepository = PostgresProfileRepository()
+
     configureSerialization()
     configureSecurity()
-    configureRouting()
+    configureRouting(profileRepository)
+    configureDatabases()
 }

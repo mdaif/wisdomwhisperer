@@ -3,6 +3,8 @@ val kotlin_version: String by project
 val logback_version: String by project
 val ktor_version: String by project
 val cognito_provider_version: String by project
+val exposed_version: String by project
+
 
 buildscript {
     dependencies {
@@ -48,6 +50,10 @@ dependencies {
     implementation("org.flywaydb:flyway-core:10.17.0")
     implementation("org.postgresql:postgresql:42.7.2")
     implementation("org.flywaydb:flyway-database-postgresql:10.17.0")
+
+    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
 
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
