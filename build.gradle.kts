@@ -4,7 +4,7 @@ val logback_version: String by project
 val ktor_version: String by project
 val cognito_provider_version: String by project
 val exposed_version: String by project
-
+val client_core: String by project
 
 buildscript {
     dependencies {
@@ -50,6 +50,14 @@ dependencies {
     implementation("org.flywaydb:flyway-core:10.17.0")
     implementation("org.postgresql:postgresql:42.7.2")
     implementation("org.flywaydb:flyway-database-postgresql:10.17.0")
+
+    implementation("io.ktor:ktor-client-core:$client_core")
+    implementation("io.ktor:ktor-client-cio:$client_core")
+    implementation("io.ktor:ktor-client-auth:$client_core")
+    implementation("io.ktor:ktor-client-json:$client_core")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-client-serialization:$client_core")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")

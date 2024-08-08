@@ -2,6 +2,7 @@ package daif.me.plugins
 
 import daif.me.model.Profile
 import daif.me.model.ProfileRepository
+import daif.me.whatsapp.WhatsappCommunication
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -55,9 +56,7 @@ fun Application.configureRouting(profileRepository: ProfileRepository) {
                     profileRepository.addProfile(profile)
                     call.respond(HttpStatusCode.Created)
                 }
-                put("/byEmail/{email}") {
 
-                }
                 get("/byEmail/{email}") {
                     val email = call.parameters["email"]
                     if (email == null) {
@@ -70,6 +69,23 @@ fun Application.configureRouting(profileRepository: ProfileRepository) {
                         return@get
                     }
                     call.respond(profile)
+                }
+
+                post("/byEmail/{email}/notifications") {
+                    val email = call.parameters["email"]
+                    val message = call.request.queryParameters["message"]
+                    if (email == null || message == null) {
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@post
+                    }
+                    val profile = profileRepository.profileByEmail(email)
+                    if (profile == null) {
+                        call.respond(HttpStatusCode.NotFound)
+                        return@post
+                    }
+                    val whatsappCommunication = WhatsappCommunication()
+                    whatsappCommunication.sendMessage(profile, message)
+                    call.respond("Sent message to ${profile.phone}")
                 }
             }
 
