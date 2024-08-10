@@ -28,7 +28,7 @@ data class Text(
 
 
 class WhatsappCommunication: CommunicationInterface {
-    override suspend fun sendMessage(profile: Profile, message: String) {
+    override suspend fun sendMessageByPhone(recipientPhoneNumber: String, message: String) {
         val graphApiAccessToken = System.getenv("GRAPH_API_ACCESS_TOKEN")
         val client = HttpClient(CIO) {
             install(ContentNegotiation) {
@@ -43,7 +43,7 @@ class WhatsappCommunication: CommunicationInterface {
         }
         val senderPhoneNumber = System.getenv("SENDER_PHONE_ID")
         val graphApiUrl = "https://graph.facebook.com/v20.0/$senderPhoneNumber/messages"
-        val recipientPhoneNumber = profile.phone
+
         val response: HttpResponse = client.post(graphApiUrl) {
             contentType(ContentType.Application.Json)
             setBody(WhatsAppMessage(
@@ -56,6 +56,10 @@ class WhatsappCommunication: CommunicationInterface {
             ))
         }
         println(response.bodyAsText())
+    }
+    override suspend fun sendMessage(profile: Profile, message: String) {
+        val recipientPhoneNumber = profile.phone
+        sendMessageByPhone(recipientPhoneNumber, message)
 
     }
 

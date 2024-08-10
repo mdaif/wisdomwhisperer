@@ -10,12 +10,18 @@ import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 
+
+private val json = Json { ignoreUnknownKeys = true }
 
 fun Application.configureRouting(profileRepository: ProfileRepository) {
     routing {
@@ -47,6 +53,46 @@ fun Application.configureRouting(profileRepository: ProfileRepository) {
 
             val token = exchangeCodeForToken(code)
             call.respond(mapOf("token" to token))
+        }
+
+        /**
+         * This endpoint receives an authentication challenge from the
+         * Fb graph api.
+        * */
+        get("/facebook-webhook") {
+
+            val challenge = call.parameters["hub.challenge"]
+            val receivedVerificationToken = call.parameters["hub.verify_token"]
+
+            val originalVerificationToken = System.getenv("VERIFICATION_TOKEN")
+            if (receivedVerificationToken == originalVerificationToken) {
+                call.respondText(challenge ?: "", status = HttpStatusCode.OK)
+            }
+        }
+
+        /*
+        * Receive the actual webhook notification
+        * */
+        post("/facebook-webhook") {
+            val rawBody = call.receiveText()
+            val jsonObject = json.parseToJsonElement(rawBody).jsonObject
+            when {
+                jsonObject["object"]?.jsonPrimitive?.content == "whatsapp_business_account" -> {
+                    val message = json.decodeFromString<FacebookWebhookMessage>(rawBody)
+                    val clientNumber = message.entry.first().changes.first().value.contacts?.first()?.waId
+                    val messageText = message.entry.first().changes.first().value.messages?.first()?.text?.body
+                    val whatsappCommunication = WhatsappCommunication()
+                    println("############")
+                    println("############")
+                    println(rawBody)
+                    println("############")
+                    println("############")
+                    if (clientNumber != null && messageText != null)
+                        whatsappCommunication.sendMessageByPhone(clientNumber, "You've just sent me:\n\n $messageText")
+
+                }
+            }
+
         }
 
         authenticate("auth-jwt") {
@@ -147,4 +193,63 @@ data class TokenResponse(
     val refreshToken: String,
     val expiresIn: Int,
     val tokenType: String
+)
+
+
+@Serializable
+data class FacebookWebhookMessage(
+    @SerialName("object") val objectType: String,
+    val entry: List<FacebookMessageEntry>
+)
+
+@Serializable
+data class FacebookMessageEntry(
+    val id: String,
+    val changes: List<FacebookMessageChange>
+)
+
+@Serializable
+data class FacebookMessageChange(
+    val field: String,
+    val value: FacebookMessageValue,
+)
+
+@Serializable
+data class FacebookMessageValue(
+    @SerialName("messaging_product") val messagingProduct: String,
+    val metadata: FacebookMetadata,
+    val contacts: List<ContactItem>? = null,
+    val messages: List<MessageItem>? = null,
+)
+
+@Serializable
+data class FacebookMetadata(
+    @SerialName("display_phone_number") val displayPhoneNumber: String,
+    @SerialName("phone_number_id") val phoneNumberId: String,
+)
+
+@Serializable
+data class ContactItem(
+    val profile: ProfileItem,
+    @SerialName("wa_id") val waId: String
+)
+
+@Serializable
+data class ProfileItem(
+    val name: String,
+)
+
+
+@Serializable
+data class MessageItem(
+    val from: String,
+    val id: String,
+    val timestamp: String,
+    val type: String,
+    val text: TextBody,
+)
+
+@Serializable
+data class TextBody(
+    val body: String,
 )
