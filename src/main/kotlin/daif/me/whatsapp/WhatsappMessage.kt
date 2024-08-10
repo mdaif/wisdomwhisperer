@@ -27,12 +27,12 @@ data class Text(
 )
 
 
-class WhatsappCommunication: CommunicationInterface {
+class WhatsappCommunication : CommunicationInterface {
     override suspend fun sendMessageByPhone(recipientPhoneNumber: String, message: String) {
         val graphApiAccessToken = System.getenv("GRAPH_API_ACCESS_TOKEN")
         val client = HttpClient(CIO) {
             install(ContentNegotiation) {
-                json(Json{
+                json(Json {
                     prettyPrint = true
                     isLenient = true
                 })
@@ -46,17 +46,20 @@ class WhatsappCommunication: CommunicationInterface {
 
         val response: HttpResponse = client.post(graphApiUrl) {
             contentType(ContentType.Application.Json)
-            setBody(WhatsAppMessage(
-                messaging_product = "whatsapp",
-                to = recipientPhoneNumber,
-                type = "text",
-                text = Text(
-                    body = message
+            setBody(
+                WhatsAppMessage(
+                    messaging_product = "whatsapp",
+                    to = recipientPhoneNumber,
+                    type = "text",
+                    text = Text(
+                        body = message
+                    )
                 )
-            ))
+            )
         }
         println(response.bodyAsText())
     }
+
     override suspend fun sendMessage(profile: Profile, message: String) {
         val recipientPhoneNumber = profile.phone
         sendMessageByPhone(recipientPhoneNumber, message)

@@ -7,10 +7,10 @@ import daif.me.db.suspendTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 
-class PostgresProfileRepository: ProfileRepository {
+class PostgresProfileRepository : ProfileRepository {
     override suspend fun profileByEmail(email: String): Profile? = suspendTransaction {
         ProfileDAO
-            .find { (ProfileTable.email eq email)}
+            .find { (ProfileTable.email eq email) }
             .limit(1)
             .map(::daoToModel)
             .firstOrNull()
