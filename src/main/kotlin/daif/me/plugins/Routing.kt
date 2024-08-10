@@ -13,8 +13,6 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -75,24 +73,34 @@ fun Application.configureRouting(profileRepository: ProfileRepository) {
         * */
         post("/facebook-webhook") {
             val rawBody = call.receiveText()
-            val jsonObject = json.parseToJsonElement(rawBody).jsonObject
-            when {
-                jsonObject["object"]?.jsonPrimitive?.content == "whatsapp_business_account" -> {
-                    val message = json.decodeFromString<FacebookWebhookMessage>(rawBody)
-                    val clientNumber = message.entry.first().changes.first().value.contacts?.first()?.waId
-                    val messageText = message.entry.first().changes.first().value.messages?.first()?.text?.body
-                    val whatsappCommunication = WhatsappCommunication()
-                    println("############")
-                    println("############")
-                    println(rawBody)
-                    println("############")
-                    println("############")
-                    if (clientNumber != null && messageText != null)
-                        whatsappCommunication.sendMessageByPhone(clientNumber, "You've just sent me:\n\n $messageText")
+            val payload = json.decodeFromString<MetaWebhookPayload>(rawBody)
 
+            val whatsappCommunication = WhatsappCommunication()
+
+            if (payload.objectType == "whatsapp_business_account") {
+                payload.entry.forEach { entry ->
+                    entry.changes.forEach { change ->
+                        if (change.field == "messages") {
+                            change.value.contacts?.forEach { contact ->
+                                val clientNumber = contact.waId
+                                change.value.messages?.forEach {message ->
+                                    if (message.type == "text") {
+                                        val messageText = message.text.body
+                                        whatsappCommunication.sendMessageByPhone(
+                                            clientNumber,
+                                            "You've just sent me:\n\n $messageText",
+                                        )
+                                    }
+
+                                }
+                            }
+                        }
+                    }
                 }
             }
-
+            // We need to acknowledge to the server, so it doesn't keep sending
+            // the same message.
+            call.respond(HttpStatusCode.OK)
         }
 
         authenticate("auth-jwt") {
@@ -197,33 +205,33 @@ data class TokenResponse(
 
 
 @Serializable
-data class FacebookWebhookMessage(
+data class MetaWebhookPayload(
     @SerialName("object") val objectType: String,
-    val entry: List<FacebookMessageEntry>
+    val entry: List<WhatsappEntry>
 )
 
 @Serializable
-data class FacebookMessageEntry(
+data class WhatsappEntry(
     val id: String,
-    val changes: List<FacebookMessageChange>
+    val changes: List<WhatsappChange>
 )
 
 @Serializable
-data class FacebookMessageChange(
+data class WhatsappChange(
     val field: String,
-    val value: FacebookMessageValue,
+    val value: WhatsappValue,
 )
 
 @Serializable
-data class FacebookMessageValue(
+data class WhatsappValue(
     @SerialName("messaging_product") val messagingProduct: String,
-    val metadata: FacebookMetadata,
+    val metadata: WhatsappMetadata,
     val contacts: List<ContactItem>? = null,
     val messages: List<MessageItem>? = null,
 )
 
 @Serializable
-data class FacebookMetadata(
+data class WhatsappMetadata(
     @SerialName("display_phone_number") val displayPhoneNumber: String,
     @SerialName("phone_number_id") val phoneNumberId: String,
 )
