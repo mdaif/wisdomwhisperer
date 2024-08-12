@@ -5,6 +5,7 @@ import daif.me.auth.exchangeCodeForToken
 import daif.me.model.Profile
 import daif.me.model.ProfileRepository
 import daif.me.whatsapp.WhatsappCommunication
+import daif.me.whatsapp.processClientResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -14,10 +15,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 
-
-private val json = Json { ignoreUnknownKeys = true }
 
 fun Application.configureRouting(profileRepository: ProfileRepository) {
     routing {
@@ -60,31 +58,7 @@ fun Application.configureRouting(profileRepository: ProfileRepository) {
         * */
         post("/facebook-webhook") {
             val rawBody = call.receiveText()
-            val payload = json.decodeFromString<MetaWebhookPayload>(rawBody)
-
-            val whatsappCommunication = WhatsappCommunication()
-
-            if (payload.objectType == "whatsapp_business_account") {
-                payload.entry.forEach { entry ->
-                    entry.changes.forEach { change ->
-                        if (change.field == "messages") {
-                            change.value.contacts?.forEach { contact ->
-                                val clientNumber = contact.waId
-                                change.value.messages?.forEach { message ->
-                                    if (message.type == "text") {
-                                        val messageText = message.text.body
-                                        whatsappCommunication.sendMessageByPhone(
-                                            clientNumber,
-                                            "You've just sent me:\n\n $messageText",
-                                        )
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            processClientResponse(rawBody)
             // We need to acknowledge to the server, so it doesn't keep sending
             // the same message.
             call.respond(HttpStatusCode.OK)
