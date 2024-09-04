@@ -5,6 +5,7 @@ val ktor_version: String by project
 val cognito_provider_version: String by project
 val exposed_version: String by project
 val client_core: String by project
+val koin_version: String by project
 
 buildscript {
     dependencies {
@@ -62,6 +63,10 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
+
+    // Koin (for DI)
+    implementation("io.insert-koin:koin-ktor:$koin_version")
+    implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
 
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
