@@ -1,7 +1,7 @@
 package me.daif.plugins
 
-import me.daif.auth.buildAuthUrl
-import me.daif.auth.exchangeCodeForToken
+import me.daif.features.auth.buildAuthUrl
+import me.daif.features.auth.exchangeCodeForToken
 import me.daif.model.Profile
 import me.daif.model.ProfileRepository
 import me.daif.whatsapp.WhatsappCommunication

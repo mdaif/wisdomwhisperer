@@ -1,4 +1,4 @@
-package me.daif.auth
+package me.daif.features.auth
 
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
