@@ -1,11 +1,11 @@
-package daif.me.plugins
+package me.daif.plugins
 
-import daif.me.auth.buildAuthUrl
-import daif.me.auth.exchangeCodeForToken
-import daif.me.model.Profile
-import daif.me.model.ProfileRepository
-import daif.me.whatsapp.WhatsappCommunication
-import daif.me.whatsapp.processClientResponse
+import me.daif.auth.buildAuthUrl
+import me.daif.auth.exchangeCodeForToken
+import me.daif.model.Profile
+import me.daif.model.ProfileRepository
+import me.daif.whatsapp.WhatsappCommunication
+import me.daif.whatsapp.processClientResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

@@ -1,6 +1,6 @@
-package daif.me.whatsapp
+package me.daif.whatsapp
 
-import daif.me.plugins.MetaWebhookPayload
+import me.daif.plugins.MetaWebhookPayload
 import kotlinx.serialization.json.Json
 
 private val json = Json { ignoreUnknownKeys = true }

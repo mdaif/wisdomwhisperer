@@ -1,4 +1,4 @@
-package daif.me.plugins
+package me.daif.plugins
 
 import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.http.*

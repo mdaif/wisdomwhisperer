@@ -1,9 +1,9 @@
-package daif.me.model
+package me.daif.model
 
-import daif.me.db.ProfileDAO
-import daif.me.db.ProfileTable
-import daif.me.db.daoToModel
-import daif.me.db.suspendTransaction
+import me.daif.db.ProfileDAO
+import me.daif.db.ProfileTable
+import me.daif.db.daoToModel
+import me.daif.db.suspendTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
 

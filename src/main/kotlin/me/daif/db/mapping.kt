@@ -1,6 +1,6 @@
-package daif.me.db
+package me.daif.db
 
-import daif.me.model.Profile
+import me.daif.model.Profile
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass

@@ -1,4 +1,4 @@
-package daif.me.plugins
+package me.daif.plugins
 
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database

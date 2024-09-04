@@ -1,10 +1,10 @@
-package daif.me
+package me.daif
 
-import daif.me.model.PostgresProfileRepository
-import daif.me.plugins.configureDatabases
-import daif.me.plugins.configureRouting
-import daif.me.plugins.configureSecurity
-import daif.me.plugins.configureSerialization
+import me.daif.model.PostgresProfileRepository
+import me.daif.plugins.configureDatabases
+import me.daif.plugins.configureRouting
+import me.daif.plugins.configureSecurity
+import me.daif.plugins.configureSerialization
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {

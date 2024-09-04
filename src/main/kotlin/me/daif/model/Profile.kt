@@ -1,4 +1,4 @@
-package daif.me.model
+package me.daif.model
 
 import kotlinx.serialization.Serializable
 

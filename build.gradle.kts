@@ -20,7 +20,7 @@ plugins {
     id("org.flywaydb.flyway") version "10.17.0"
 }
 
-group = "daif.me"
+group = "me.daif"
 version = "0.0.1"
 
 application {

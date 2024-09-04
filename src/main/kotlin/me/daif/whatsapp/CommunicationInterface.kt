@@ -1,6 +1,6 @@
-package daif.me.whatsapp
+package me.daif.whatsapp
 
-import daif.me.model.Profile
+import me.daif.model.Profile
 
 
 interface CommunicationInterface {

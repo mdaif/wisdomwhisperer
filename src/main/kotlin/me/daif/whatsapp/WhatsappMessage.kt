@@ -1,6 +1,6 @@
-package daif.me.whatsapp
+package me.daif.whatsapp
 
-import daif.me.model.Profile
+import me.daif.model.Profile
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
