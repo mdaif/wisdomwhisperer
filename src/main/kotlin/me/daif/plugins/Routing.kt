@@ -2,8 +2,7 @@ package me.daif.plugins
 
 import me.daif.features.auth.buildAuthUrl
 import me.daif.features.auth.exchangeCodeForToken
-import me.daif.model.Profile
-import me.daif.model.ProfileRepository
+import me.daif.features.profile.domain.repository.ProfileRepository
 import me.daif.whatsapp.WhatsappCommunication
 import me.daif.whatsapp.processClientResponse
 import io.ktor.http.*
@@ -15,6 +14,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import me.daif.features.profile.domain.model.ProfileDTO
 
 
 fun Application.configureRouting(profileRepository: ProfileRepository) {
@@ -67,7 +67,7 @@ fun Application.configureRouting(profileRepository: ProfileRepository) {
         authenticate("auth-jwt") {
             route("/profile") {
                 post("") {
-                    val profile = call.receive<Profile>()
+                    val profile = call.receive<ProfileDTO>()
                     profileRepository.addProfile(profile)
                     call.respond(HttpStatusCode.Created)
                 }

@@ -1,6 +1,5 @@
 package me.daif.whatsapp
 
-import me.daif.model.Profile
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -11,6 +10,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import me.daif.features.profile.domain.model.ProfileDTO
 
 
 @Serializable
@@ -60,7 +60,7 @@ class WhatsappCommunication : CommunicationInterface {
         println(response.bodyAsText())
     }
 
-    override suspend fun sendMessage(profile: Profile, message: String) {
+    override suspend fun sendMessage(profile: ProfileDTO, message: String) {
         val recipientPhoneNumber = profile.phone
         sendMessageByPhone(recipientPhoneNumber, message)
 

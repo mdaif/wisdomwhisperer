@@ -1,6 +1,6 @@
 package me.daif
 
-import me.daif.model.PostgresProfileRepository
+import me.daif.features.profile.domain.repository.ProfileRepository
 //import me.daif.plugins.configureDatabases
 import me.daif.plugins.configureRouting
 import me.daif.plugins.configureSecurity
@@ -21,9 +21,10 @@ fun Application.module() {
     databaseFactory.connect()
 
 
-    val profileRepository = PostgresProfileRepository()
 
     configureSerialization()
     configureSecurity()
+
+    val profileRepository by inject<ProfileRepository>()
     configureRouting(profileRepository)
 }
