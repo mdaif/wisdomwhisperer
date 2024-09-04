@@ -32,14 +32,29 @@ fun Application.setUpAppConfig() {
     val dbName = dbObject.property("dbName").getString()
     val dbUser = dbObject.property("dbUser").getString()
     val dbPass = dbObject.property("dbPass").getString()
+
+    // Hikari
+    val dbPoolName = dbObject.property("maxPoolSize").getString()
+    val dbDriverClassName = dbObject.property("dbDriverClassName").getString()
     val maxPoolSize = dbObject.property("maxPoolSize").getString().toInt()
+    val minimumIdle = dbObject.property("minimumIdle").getString().toInt()
+    val idleTimeout = dbObject.property("idleTimeout").getString().toLong()
+    val connectionTimeout = dbObject.property("connectionTimeout").getString().toLong()
+    val maxLifetime = dbObject.property("maxLifetime").getString().toLong()
+
     appConfig.dbConfig = DatabaseConfig(
-        dbHost=dbHost,
-        dbPort=dbPort,
-        dbName=dbName,
-        dbUser=dbUser,
-        dbPass=dbPass,
-        maxPoolSize=maxPoolSize,
+        dbHost = dbHost,
+        dbPort = dbPort,
+        dbName = dbName,
+        dbUser = dbUser,
+        dbPass = dbPass,
+        dbPoolName = dbPoolName,
+        dbDriverClassName = dbDriverClassName,
+        maxPoolSize = maxPoolSize,
+        minimumIdle = minimumIdle,
+        idleTimeout = idleTimeout,
+        connectionTimeout = connectionTimeout,
+        maxLifetime = maxLifetime,
     )
 
     if (appConfig.serverConfig.env != Environment.PROD) {
