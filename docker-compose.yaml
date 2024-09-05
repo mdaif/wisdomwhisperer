@@ -9,3 +9,13 @@ services:
       POSTGRES_USER: wisdomwhisperer_devuser
       POSTGRES_PASSWORD: wisdomwhisperer_pass
       POSTGRES_DB: wisdomwhisperer_db
+
+  db-test:
+    image: postgres:16
+    restart: on-failure
+    ports:
+      - 10001:5432
+    environment:
+      POSTGRES_USER: wisdomwhisperer_testuser
+      POSTGRES_PASSWORD: wisdomwhisperer_testpass
+      POSTGRES_DB: wisdomwhisperer_testdb
