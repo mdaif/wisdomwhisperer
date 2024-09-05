@@ -19,4 +19,8 @@ class ProfileTest: AutoCloseKoinTest() {
         }
     }
 
+    @Test
+    fun testAuthenticationWorks() = configuredTestApplication {
+
+    }
 }

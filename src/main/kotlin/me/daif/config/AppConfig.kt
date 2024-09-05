@@ -15,15 +15,20 @@ class AppConfig {
 }
 
 fun Application.setUpAppConfig() {
-    install(Koin) {
-        slf4jLogger()
-        modules(appModule)
+    val serverObject = environment.config.config("ktor.server")
+    val env = serverObject.property("env").getString()
+    if (Environment.valueOf(env) != Environment.TEST) {
+        // The installation and module configurations happens in tests
+        // via the `startKoin` function
+
+        install(Koin) {
+            slf4jLogger()
+            modules(appModule)
+        }
     }
 
     val appConfig by inject<AppConfig>()
 
-    val serverObject = environment.config.config("ktor.server")
-    val env = serverObject.property("env").getString()
     appConfig.serverConfig = ServerConfig(env=Environment.valueOf(env))
 
     val dbObject = environment.config.config("ktor.database")

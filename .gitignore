@@ -37,3 +37,5 @@ out/
 /clients/.test_auth_redirect.py.swp
 /.kotlin/sessions/kotlin-compiler-8108572190659385810.salive
 /LOG_DEST_IS_UNDEFINED/wisdomwhisperer.log
+/.kotlin/
+

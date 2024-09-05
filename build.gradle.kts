@@ -66,6 +66,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
 
     // Koin (for DI)
+    implementation("io.insert-koin:koin-core:$koin_version")
     implementation("io.insert-koin:koin-ktor:$koin_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
 

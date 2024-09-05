@@ -1,27 +1,21 @@
 package me.daif.plugins
 
-import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
-import java.util.concurrent.TimeUnit
+import me.daif.features.auth.jwkprovider.JwkProvider
 
 
-fun Application.configureSecurity() {
-    val cognitoPoolId = System.getenv("COGNITO_USER_POOL_ID")
-    val awsRegion = System.getenv("AWS_REGION")
-    val issuer = "https://cognito-idp.$awsRegion.amazonaws.com/$cognitoPoolId"
-    val jwkProvider = JwkProviderBuilder(issuer)
-        .cached(10, 24, TimeUnit.HOURS)
-        .rateLimited(10, 1, TimeUnit.MINUTES)
-        .build()
+fun Application.configureSecurity(jwkProvider: JwkProvider) {
+    val issuer = jwkProvider.getIssuer()
+    val provider = jwkProvider.createProvider()
 
     install(Authentication) {
         jwt("auth-jwt") {
             realm = "WisdomWhisperer"
-            verifier(jwkProvider, issuer) {
+            verifier(provider, issuer) {
                 acceptLeeway(3)
             }
             validate { credential ->
