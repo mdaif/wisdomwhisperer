@@ -1,4 +1,4 @@
-package me.daif.whatsapp
+package me.daif.features.whatsapp
 
 import me.daif.plugins.MetaWebhookPayload
 import kotlinx.serialization.json.Json

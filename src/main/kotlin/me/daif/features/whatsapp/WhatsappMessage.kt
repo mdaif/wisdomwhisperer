@@ -1,4 +1,4 @@
-package me.daif.whatsapp
+package me.daif.features.whatsapp
 
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*

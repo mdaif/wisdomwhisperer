@@ -3,8 +3,8 @@ package me.daif.plugins
 import me.daif.features.auth.buildAuthUrl
 import me.daif.features.auth.exchangeCodeForToken
 import me.daif.features.profile.domain.repository.ProfileRepository
-import me.daif.whatsapp.WhatsappCommunication
-import me.daif.whatsapp.processClientResponse
+import me.daif.features.whatsapp.WhatsappCommunication
+import me.daif.features.whatsapp.processClientResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
