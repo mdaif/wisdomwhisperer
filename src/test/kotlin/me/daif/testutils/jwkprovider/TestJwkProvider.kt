@@ -1,60 +1,50 @@
 package me.daif.features.auth.jwkprovider
 
-import com.auth0.jwk.JwkProvider as OAuthJwkProvider
-import com.auth0.jwk.Jwk
-import com.auth0.jwk.SigningKeyNotFoundException
-import java.security.KeyPair
-import java.security.KeyPairGenerator
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.server.auth.jwt.*
+import java.security.*
+import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
-import java.util.Base64
-import java.util.concurrent.ConcurrentHashMap
+import java.util.*
 
-class TestJwkProvider: JwkProvider  {
-    override fun getIssuer(): String {
-        return "https://test-issuer"
-    }
+private const val ISSUER = "http://localhost"
+private const val AUDIENCE = "http://localhost"
+private const val SECRET = "SHHHHHHH"
 
-    override fun createProvider(): OAuthJwkProvider {
-        val jwkProvider = MockJwkProvider()
-        return jwkProvider
+object Rsa256Pair {
+    private val generator: KeyPairGenerator = KeyPairGenerator.getInstance("RSA").also {
+        it.initialize(2048, SecureRandom())
     }
+    private val keypair: KeyPair = generator.genKeyPair()
+
+    val privateKey: RSAPrivateKey = keypair.private as RSAPrivateKey
+    val publicKey: RSAPublicKey = keypair.public as RSAPublicKey
+
 }
 
 
-class MockJwkProvider : OAuthJwkProvider {
-
-    // Cache of the generated keys
-    private val jwksCache = ConcurrentHashMap<String, Jwk>()
-
-    // Initialize the provider with a mock key
-    init {
-        val keyPair = generateRSAKeyPair()
-        val publicKey = keyPair.public as RSAPublicKey
-
-        // Create a JWK representation of the public key
-        val jwk = Jwk.fromValues(mapOf(
-            "kty" to "RSA",
-            "kid" to "test-key-id", // Key ID
-            "alg" to "RS256", // Algorithm used
-            "use" to "sig", // Use for signature
-            "n" to Base64.getUrlEncoder().encodeToString(publicKey.modulus.toByteArray()), // Modulus
-            "e" to Base64.getUrlEncoder().encodeToString(publicKey.publicExponent.toByteArray()) // Exponent
-        ))
-
-        // Add the JWK to the cache
-        jwksCache["test-key-id"] = jwk
-    }
-
-    // Function to retrieve the JWK by key ID
-    override fun get(keyId: String): Jwk {
-        return jwksCache[keyId] ?: throw SigningKeyNotFoundException("Key not found", null)
-    }
-
-    // Helper function to generate an RSA Key Pair
-    private fun generateRSAKeyPair(): KeyPair {
-        val keyPairGenerator = KeyPairGenerator.getInstance("RSA")
-        keyPairGenerator.initialize(2048)
-        return keyPairGenerator.generateKeyPair()
-    }
+fun createJwtToken(username: String): String {
+    return JWT.create()
+        .withAudience(AUDIENCE)
+        .withIssuer(ISSUER)
+        .withClaim("username", username)
+        .withExpiresAt(Date(System.currentTimeMillis() + 60000))
+        .sign(Algorithm.RSA256(Rsa256Pair.publicKey, Rsa256Pair.privateKey))
 }
 
+
+
+class TestJwtVerifier : JwtVerifier {
+
+    override fun verifyJwt(config: JWTAuthenticationProvider.Config) {
+        config.verifier(
+            JWT.require(Algorithm.RSA256(Rsa256Pair.publicKey, Rsa256Pair.privateKey))
+                .withAudience(AUDIENCE)
+                .withIssuer(ISSUER)
+                .build()
+        )
+    }
+
+
+}

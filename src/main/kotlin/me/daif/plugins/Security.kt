@@ -5,21 +5,17 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
-import me.daif.features.auth.jwkprovider.JwkProvider
+import me.daif.features.auth.jwkprovider.JwtVerifier
 
 
-fun Application.configureSecurity(jwkProvider: JwkProvider) {
-    val issuer = jwkProvider.getIssuer()
-    val provider = jwkProvider.createProvider()
-
+fun Application.configureSecurity(jwtVerifier: JwtVerifier) {
     install(Authentication) {
         jwt("auth-jwt") {
             realm = "WisdomWhisperer"
-            verifier(provider, issuer) {
-                acceptLeeway(3)
-            }
+
+            jwtVerifier.verifyJwt(this)
             validate { credential ->
-                if (credential.payload.getClaim("username").asString() != "") {
+                if (credential.payload.getClaim("username").asString().isNotEmpty()) {
                     JWTPrincipal(credential.payload)
                 } else {
                     null

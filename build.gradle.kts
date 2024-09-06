@@ -73,6 +73,13 @@ dependencies {
     //Hikari (for DB connection pooling)
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
 
+    // call logging
+    implementation("io.ktor:ktor-server-call-logging:$ktor_version")
+
+    // status pages so we can see and react to 500 errors and customize
+    // error handling (like 400 errors).
+    implementation("io.ktor:ktor-server-status-pages:$ktor_version")
+
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
